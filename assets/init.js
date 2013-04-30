@@ -1,2 +1,4 @@
-var game = new Game();
-game.init();
+$(document).ready(function(){
+	var game = new Game();
+	game.init();
+});
