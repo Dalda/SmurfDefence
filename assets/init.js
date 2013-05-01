@@ -1,4 +1,8 @@
+var game;
+
 $(document).ready(function(){
-	var game = new Game();
+	console.log($(window).height());
+	console.log($(window).width());
+	game = new Game();
 	game.init();
 });

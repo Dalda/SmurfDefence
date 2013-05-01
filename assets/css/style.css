@@ -5,7 +5,11 @@ body, html {
 	height: 100%;
 }
 canvas { 
-    border: 1px solid cadetblue;
+    outline: 10px solid cadetblue;
+	position: absolute;
+	top: 10px;
+	left: 50%;
+	margin-left: -500px;
 }
 footer {
 	font: bold 20pt Arial;
