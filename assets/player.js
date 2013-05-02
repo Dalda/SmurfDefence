@@ -1,9 +1,12 @@
 function Player(x, y, ctx){
-	this.x = x;
-	this.y = y;
 	this.ctx = ctx;
 	
+	this.x = x;
+	this.y = y;
+	this.health = 100;
+	this.speed = 2;
+	
 	this.draw = function(){
-		this.ctx.fillRect(this.x, this.y, 10, 10);
+		this.ctx.fillRect(this.x-30, this.y-50, 60, 100);
 	};
 }
