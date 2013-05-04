@@ -1,5 +1,7 @@
-function Eventhandler(_thisCan, _thisGame){
+function Eventhandler(_thisCan, _thisGame, _thisPlayer){
 	this._thisGame = _thisGame; //can be solved better?
+	this._thisPlayer = _thisPlayer;
+	
 	this.down = {};
 	
 	var _this = this;
@@ -15,8 +17,8 @@ function Eventhandler(_thisCan, _thisGame){
 }
 
 Eventhandler.prototype.rightClick = function(e){
-	console.log("right click"+e.clientX+";"+e.clientY);
 	e.preventDefault();
+	console.log("right click"+e.clientX+";"+e.clientY);
 };
 
 Eventhandler.prototype.mouseDown = function(e){
@@ -41,10 +43,17 @@ Eventhandler.prototype.mouseUp = function(e){
 Eventhandler.prototype.keyDown = function(e){
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
 	this.down[strVal] = true;
+	
+	if(strVal == "s" && !this._thisPlayer.crouching && !this._thisPlayer.jumping){
+		this._thisPlayer.beginCrouch();
+	}
+	
+	if(strVal == "w" && !this._thisPlayer.jumping){
+		this._thisPlayer.beginJump();
+	}
 };
 
 Eventhandler.prototype.keyUp = function(e){
-	console.log("up "+e.keyCode+" "+String.fromCharCode(e.keyCode).toLowerCase());
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
 	if(strVal == "p"){ //p - pause
 		if(!this._thisGame.stopped){
@@ -54,6 +63,9 @@ Eventhandler.prototype.keyUp = function(e){
 			this._thisGame.startGame();
 		}
 		return;
+	}
+	if(strVal == "s" && this._thisPlayer.crouching){ 
+		this._thisPlayer.endCrouch();
 	}
 	this.down[strVal] = false;
 };
