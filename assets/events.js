@@ -1,42 +1,39 @@
-function Eventhandler(_thisCan, _thisGame, _thisPlayer){
-	this._thisGame = _thisGame; //can be solved better?
-	this._thisPlayer = _thisPlayer;
-	
+function Eventhandler(offset, player){
+	this.player = player;
+	this.offset = offset;
+	console.log(offset.left+" "+offset.top);
 	this.down = {};
 	
 	var _this = this;
+	document.addEventListener("contextmenu", function(event){event.preventDefault();}); //cancel
 	
-	_thisCan.addEventListener("contextmenu", function(event){_this.rightClick(event);}); //right
-	
-	_thisCan.addEventListener("mousedown", function(event){_this.mouseDown(event);}); //down any
-	_thisCan.addEventListener("mouseup", function(event){_this.mouseUp(event);}); //up any
+	document.addEventListener("mousedown", function(event){_this.mouseDown(event);}); //down any
+	document.addEventListener("mouseup", function(event){_this.mouseUp(event);}); //up any
 	
 	document.addEventListener("keydown", function(event){_this.keyDown(event);});
 	document.addEventListener("keyup", function(event){_this.keyUp(event);});
-	//why keyup and keydown doesn't work for single element (canvas)?
 }
-
-Eventhandler.prototype.rightClick = function(e){
-	e.preventDefault();
-	console.log("right click"+e.clientX+";"+e.clientY);
-};
 
 Eventhandler.prototype.mouseDown = function(e){
 	e.preventDefault();
+	var x = e.clientX; x -= this.offset.left;
+	var y = e.clientY; y -= this.offset.top;
 	if(e.which == 1){//left down
-		console.log("left down "+e.which+" "+e.type+" "+e.clientX+" "+e.clientY);
+		console.log("left down "+e.which+" "+x+";"+y);
 	}
 	else{ //right down
-		console.log("right down "+e.which+" "+e.type+" "+e.clientX);
+		console.log("right down "+e.which+" "+x+";"+y);
 	}
 };
 Eventhandler.prototype.mouseUp = function(e){
 	e.preventDefault();
+	var x = e.clientX; x -= this.offset.left;
+	var y = e.clientY; y -= this.offset.top;
 	if(e.which == 1){ //left up
-		console.log("left up "+e.which+" "+e.type+" "+e.clientX+" "+e.clientY);
+		console.log("left up "+e.which+" "+x+";"+y);
 	}
 	else{ //right up
-		console.log("right up "+e.which+" "+e.type+" "+e.clientX+" "+e.clientY);
+		console.log("right up "+e.which+" "+x+";"+y);
 	}
 };
 
@@ -44,28 +41,20 @@ Eventhandler.prototype.keyDown = function(e){
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
 	this.down[strVal] = true;
 	
-	if(strVal == "s" && !this._thisPlayer.crouching && !this._thisPlayer.jumping){
-		this._thisPlayer.beginCrouch();
+	if(strVal == "w" && !this.player.jumping){
+		if(this.player.crouching){ //crouching
+			this.player.checkEndCrouch = true;
+		}
+		else{ //standing
+			this.player.beginJump();
+		}
 	}
-	
-	if(strVal == "w" && !this._thisPlayer.jumping){
-		this._thisPlayer.beginJump();
+	if(strVal == "s" && !this.player.jumping && !this.player.crouching){
+		this.player.beginCrouch();
 	}
 };
 
 Eventhandler.prototype.keyUp = function(e){
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
-	if(strVal == "p"){ //p - pause
-		if(!this._thisGame.stopped){
-			this._thisGame.stopped = true;
-		}
-		else{
-			this._thisGame.startGame();
-		}
-		return;
-	}
-	if(strVal == "s" && this._thisPlayer.crouching){ 
-		this._thisPlayer.endCrouch();
-	}
 	this.down[strVal] = false;
 };

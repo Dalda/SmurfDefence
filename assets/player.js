@@ -8,6 +8,7 @@ function Player(x, y){
 	this.health = 100;
 	this.speed = 3;
 	this.crouching = false; //crouching not allowed while jumping
+	this.checkEndCrouch = false; //used during game.update
 	this.jumping = false; //jump allowed when crouched
 	this.jumpEnergy = 0; //pro simulaci skokové křivky
 	this.gravity = 0.2; //tvar skokové křivky
@@ -41,6 +42,7 @@ Player.prototype.beginCrouch = function(){
 	this.y += this.height/2;
 	this.height /= 2;
 };
+
 Player.prototype.endCrouch = function(){
 	console.log("end crouch");
 	this.crouching = false;
