@@ -1,26 +1,25 @@
 function Background(width, height){
-	this.x = 0;
-	this.y = 0;
+	//roztazene pres cely canvas a posouva se spolu s hracem
 	this.width = width;
 	this.height = height;
-	this.shift = 0;
-	this.multiplier = 0.2;
+	this.shift = 100;
+	this.multiplier = 0.05;
 }
 
 Background.prototype.im = new Image();
 Background.prototype.im.src = "assets/images/hell.jpg";
 
 Background.prototype.draw = function(ctx){
-	ctx.drawImage(this.im, this.shift, this.x, this.width, this.height,
-							this.x, this.y, this.width, this.height);
+	ctx.drawImage(this.im, this.shift, 0, this.width, 920,
+							0, 0, this.width, this.height);
 };
 
 Background.prototype.updateLeft = function(amount){
 	this.shift -= amount*this.multiplier;
-	this.shift = (this.shift+this.width)%this.width;
+	if(this.shift < 0) this.shift = 1020;
 };
 Background.prototype.updateRight = function(amount){
 	this.shift += amount*this.multiplier;
-	this.shift = this.shift%this.width;
+	if(this.shift > 1020) this.shift = 0;
 };
 

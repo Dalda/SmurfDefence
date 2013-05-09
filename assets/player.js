@@ -1,15 +1,18 @@
 function Player(x, y){
-	this.x = x;
-	this.y = y;
+	this.boundary = x;
+	this.x = x/6;
+	this.y = y/2;
 	this.width = 60;
 	this.height = 100;
+	this.frame = 0;
+	this.shiftXA = 301; this.shiftXB = 95;
+	this.shiftYA = 386; this.shiftYB = 192;
+	
 	this.collTolerance = 10; //collision tolerance, when the collision is detected in Game
 	
 	this.health = 100;
-	this.speed = 3;
-	this.crouching = false; //crouching not allowed while jumping
-	this.checkEndCrouch = false; //used during game.update
-	this.jumping = false; //jump allowed when crouched
+	this.speed = 2.4;
+	this.jumping = false;
 	this.jumpEnergy = 0; //pro simulaci skokové křivky
 	this.gravity = 0.2; //tvar skokové křivky
 	
@@ -17,17 +20,60 @@ function Player(x, y){
 						//falling třeba na začátku
 			
 }
+Player.prototype.im = new Image();
+Player.prototype.im.src = "assets/images/player.png";
 
 Player.prototype.draw = function(ctx){
-	ctx.fillStyle = "#802FA1";
-	ctx.fillRect(this.x, this.y, this.width, this.height);
+	ctx.drawImage(this.im, this.shiftXA, this.shiftYA, this.shiftXB, this.shiftYB,
+							this.x, this.y, this.width, this.height);
+};
+
+Player.prototype.updateStand = function(){
+	this.updFrame(true);
+};
+Player.prototype.updateLeft = function(){
+	this.x -= this.speed;
+	this.updFrame(false);
+};
+
+Player.prototype.updateRight = function(){
+	this.x += this.speed;
+	this.updFrame(false);
+};
+
+Player.prototype.updFrame = function(standState){
+	if(this.jumping){
+		this.frame = 0;
+		this.upd(2, 2, 87, 168);
+	}
+	else if(standState){
+		this.frame = 0;
+		this.upd(559, 2, 85, 190);
+	}
+	else{
+		this.frame++;
+		switch(Math.floor((this.frame/5)%9)+1){
+			case 1: this.upd(301, 386, 95, 192); break;
+			case 2: this.upd(570, 194, 115, 190); break;
+			case 3: this.upd(398, 386, 133, 192); break;
+			case 4: this.upd(155, 194, 147, 190); break;
+			case 5: this.upd(785, 386, 127, 194); break;
+			case 6: this.upd(127, 582, 135, 198); break;
+			case 7: this.upd(264, 582, 111, 200); break;
+			case 8: this.upd(2, 582, 123, 198); break;
+			case 9: this.upd(533, 386, 115, 192); break;
+		}
+	}
+};
+Player.prototype.upd = function(a, b, c, d){
+	this.shiftXA = a;
+	this.shiftYA = b;
+	this.shiftXB = c;
+	this.shiftYB = d;
 };
 
 Player.prototype.beginJump = function(){
 	console.log("begin jump");
-	if(this.crouching){
-		this.endCrouch();
-	}
 	this.jumping = true;
 	this.jumpEnergy = 1/this.gravity;
 };
@@ -36,23 +82,14 @@ Player.prototype.endJump = function(){
 	this.jumping = false;
 	this.jumpEnergy = 0;
 };
-Player.prototype.beginCrouch = function(){
-	console.log("begin crouch");
-	this.crouching = true;
-	this.y += this.height/2;
-	this.height /= 2;
-};
-
-Player.prototype.endCrouch = function(){
-	console.log("end crouch");
-	this.crouching = false;
-	this.height *= 2;
-	this.y -= this.height/2;
-};
 
 //collision functions return coords where to move
 //pozici kde bude na kolidujici objekt tesne nalepen
 Player.prototype.collideHorizontal = function(objects){
+	if(this.x < 0) return 0;
+	else if(this.x > this.boundary-this.width){
+		return this.boundary-this.width;
+	}
 	for(var i=0;i<objects.length;i++){
 		var ox = objects[i].x;var oxS = objects[i].width;
 		var oy = objects[i].y;var oyS = objects[i].height;

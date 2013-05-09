@@ -12,7 +12,7 @@ function Game(){
 	this.loader = new Loader();
 	this.sound = new Sound();
 	this.background = new Background(this.width, this.height);
-	this.player = new Player(this.width/6, this.height/2);
+	this.player = new Player(this.width, this.height);
 	this.eventhandler;
 	//maybe Eventhandler should be main object with Game as a member variable
 	//ask Kukas...
@@ -67,40 +67,41 @@ Game.prototype.update = function(){
 		this.player.fallSpeed = 0; //v tuto chvili uz nepada
 	}
 	
+	//move
+	var left = this.eventhandler.down["a"];
+	var right = this.eventhandler.down["d"];
+	if((left && right) || (!left && !right)){
+		this.player.updateStand();
+	}
+	else if(left) this.player.updateLeft();
+	else if(right) this.player.updateRight();
 	
-	if(this.eventhandler.down["a"]){
-		this.player.x -= this.player.speed;
-		this.background.updateLeft(this.player.speed);
-	}
-	if(this.eventhandler.down["d"]){
-		this.player.x += this.player.speed;
-		this.background.updateRight(this.player.speed);
-	}
 	//x collisions
 	var collMoveX = this.player.collideHorizontal(this.objects);
-	if(Math.abs(collMoveX-this.player.x) < this.player.collTolerance){
-		if(collMoveX !== this.player.x) console.log("horizonatal collision");
-		this.player.x = collMoveX;
-	}
-	//y collisions
-	if(this.player.checkEndCrouch){
-		this.player.endCrouch(); //temporarily
-	}
-	var collMoveY = this.player.collideVertical(this.objects);
-	if(this.player.checkEndCrouch){ 
-		if(collMoveY != this.player.y){ //cannot end crouch
-			this.player.beginCrouch(); //temp changes back
+	var collX = collMoveX !== this.player.x;
+	if(collX){
+		if(Math.abs(collMoveX-this.player.x) < this.player.collTolerance){
+			console.log("horizonatal collision");
+			this.player.x = collMoveX;
 		}
-		this.player.checkEndCrouch = false;
-	}			
-	if(Math.abs(collMoveY-this.player.y) < this.player.collTolerance){
-		if(collMoveY !== this.player.y) console.log("vertical collision");
-		this.player.y = collMoveY;
+	}
+	else{ //no collisions-> move bg image, if player moving
+		if(left) this.background.updateLeft(this.player.speed);
+		if(right) this.background.updateRight(this.player.speed);
+	}
+	
+	//y collisions
+	var collMoveY = this.player.collideVertical(this.objects);
+	var collY = collMoveY !== this.player.y;
+	if(collY){
+		if(Math.abs(collMoveY-this.player.y) < this.player.collTolerance){
+			console.log("vertical collision");
+			this.player.y = collMoveY;
+		}
 	}
 };
 
 Game.prototype.draw = function(){
-	//try having many canvases and redraw only changes (only certain canvases)
 	this.ctx.clearRect(0, 0, this.width, this.height);
 	this.background.draw(this.ctx);
 	for(var i = 0;i < this.objects.length;i++){

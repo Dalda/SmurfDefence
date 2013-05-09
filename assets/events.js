@@ -52,15 +52,7 @@ Eventhandler.prototype.keyDown = function(e){
 	this.down[strVal] = true;
 	
 	if(strVal == "w" && !this.player.jumping){
-		if(this.player.crouching){ //crouching
-			this.player.checkEndCrouch = true;
-		}
-		else{ //standing
-			this.player.beginJump();
-		}
-	}
-	if(strVal == "s" && !this.player.jumping && !this.player.crouching){
-		this.player.beginCrouch();
+		this.player.beginJump();
 	}
 };
 
