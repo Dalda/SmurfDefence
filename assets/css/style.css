@@ -12,6 +12,9 @@ canvas {
 	left: 50%;
 	margin-left: -500px;
 }
+canvas:hover, canvas:active, canvas:focus { 
+    cursor: url(../images/crosshair.png), auto;
+}
 footer {
 	font: bold 20pt Arial;
 	color: #000000;

@@ -10,6 +10,8 @@ function Game(){
 	this.interval = false;
 	this.stopped = true;
 	this.loader = new Loader();
+	this.sound = new Sound();
+	this.background = new Background(this.width, this.height);
 	this.player = new Player(this.width/6, this.height/2);
 	this.eventhandler;
 	//maybe Eventhandler should be main object with Game as a member variable
@@ -23,6 +25,7 @@ Game.prototype.init = function(){
 	
 	this.eventhandler =  new Eventhandler($(this.canvas).offset(), this.player);
 	this.loader.loadObjects(this.objects);
+	this.sound.init();
 	this.startGame();
 };
 
@@ -37,7 +40,11 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 	//meanwhile processing player input
 	_this.update();
 	_this.draw();
-	
+	if(_this.eventhandler.down["rightdown"]){
+		console.log("swap music");
+		_this.sound.swap();
+		_this.eventhandler.down["rightdown"] = false;
+	}
 	if(_this.eventhandler.down["p"]){
 		_this.stopped = true;
 		window.clearInterval(this.interval);
@@ -63,9 +70,11 @@ Game.prototype.update = function(){
 	
 	if(this.eventhandler.down["a"]){
 		this.player.x -= this.player.speed;
+		this.background.updateLeft(this.player.speed);
 	}
 	if(this.eventhandler.down["d"]){
 		this.player.x += this.player.speed;
+		this.background.updateRight(this.player.speed);
 	}
 	//x collisions
 	var collMoveX = this.player.collideHorizontal(this.objects);
@@ -91,10 +100,9 @@ Game.prototype.update = function(){
 };
 
 Game.prototype.draw = function(){
-	//getImageData and putImageData is expensive
 	//try having many canvases and redraw only changes (only certain canvases)
-	this.ctx.fillStyle = "#F0AA4F";
-	this.ctx.fillRect(0, 0, this.width, this.height);
+	this.ctx.clearRect(0, 0, this.width, this.height);
+	this.background.draw(this.ctx);
 	for(var i = 0;i < this.objects.length;i++){
 		this.objects[i].draw(this.ctx);
 	}
