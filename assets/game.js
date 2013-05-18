@@ -48,6 +48,7 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 	}
 	if(_this.eventhandler.down["p"]){
 		_this.stopped = true;
+		_this.sound.stop();
 		window.clearInterval(this.interval);
 		console.log("stopped");
 	}
