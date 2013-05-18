@@ -48,7 +48,7 @@ Eventhandler.prototype.keyDown = function(e){
 	this.down[strVal] = true;
 	if(strVal == "a") this.player.lastDirection = "l";   //for player frame
 	else if(strVal == "d") this.player.lastDirection = "r";
-	else if(strVal == "w" && !this.player.jumping){
+	else if(strVal == "w" && !this.player.jumping && this.player.fallSpeed == 0){
 		this.player.beginJump();
 	}
 };
