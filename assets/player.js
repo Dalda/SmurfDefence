@@ -22,15 +22,33 @@ function Player(x, y){
 }
 Player.prototype.im = new Image();
 Player.prototype.im.src = "assets/images/player.png";
-
 Player.prototype.draw = function(ctx){
 	ctx.drawImage(this.im, this.shiftXA, this.shiftYA, this.shiftXB, this.shiftYB,
 							this.x, this.y, this.width, this.height);
 };
+Player.prototype.update = function(left, right, objects){
+	if(this.jumping){
+		this.y -= this.jumpEnergy;
+		this.jumpEnergy -= this.gravity;
+	}
+	else if(!this.onGround(objects)){ //not touching ground
+		//when NOT JUMPING
+		console.log("falling");
+		this.fallSpeed += this.gravity;
+		this.y += this.fallSpeed;
+	}
+	else{ //touching ground
+		this.fallSpeed = 0; //v tuto chvili uz nepada
+	}
 
-Player.prototype.updateStand = function(){
-	this.updFrame(true);
+	//move
+	if((left && right) || (!left && !right)){
+		this.updFrame(true);
+	}
+	else if(left) this.updateLeft();
+	else if(right) this.updateRight();
 };
+
 Player.prototype.updateLeft = function(){
 	this.x -= this.speed;
 	this.updFrame(false);
@@ -73,12 +91,10 @@ Player.prototype.upd = function(a, b, c, d){
 };
 
 Player.prototype.beginJump = function(){
-	console.log("begin jump");
 	this.jumping = true;
 	this.jumpEnergy = 1/this.gravity;
 };
 Player.prototype.endJump = function(){
-	console.log("end jump");
 	this.jumping = false;
 	this.jumpEnergy = 0;
 };

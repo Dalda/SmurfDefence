@@ -10,8 +10,8 @@ Background.prototype.im = new Image();
 Background.prototype.im.src = "assets/images/hell.jpg";
 
 Background.prototype.draw = function(ctx){
-	ctx.drawImage(this.im, this.shift, 0, this.width, 920,
-							0, 0, this.width, this.height);
+	ctx.drawImage(this.im, this.shift, 0, this.width, this.height,
+							0, 0, this.width, this.height-50);
 };
 
 Background.prototype.updateLeft = function(amount){

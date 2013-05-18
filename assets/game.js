@@ -5,7 +5,9 @@ function Game(){
 	this.height = 500;
 	
 	this.objects = [];
-	
+	this.shots = [];
+	this.shootingLock = false;
+
 	this.fps = 60;
 	this.interval = false;
 	this.stopped = true;
@@ -14,8 +16,7 @@ function Game(){
 	this.background = new Background(this.width, this.height);
 	this.player = new Player(this.width, this.height);
 	this.eventhandler;
-	//maybe Eventhandler should be main object with Game as a member variable
-	//ask Kukas...
+	//maybe Eventhandler should be main object with Game as a member variable-ask Kukas...
 }
 
 Game.prototype.init = function(){
@@ -51,31 +52,33 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 		console.log("stopped");
 	}
 };
+Game.prototype.updateShots = function(){
+	if(!this.shootingLock && this.eventhandler.down["leftdown"]){
+		this.shots.push(new Shot(this.player.x, this.player.y, this.eventhandler.mouseX, this.eventhandler.mouseY));
+		this.shootingLock = true;
+		var _this = this;
+		window.setTimeout(function(){_this.shootingLock = false;}, 300);
+	}
+	for(var i=0;i<this.shots.length;i++){
+		this.shots[i].update();
+	}
+};
+Game.prototype.update = function(){
+	this.updateShots();
+	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"], this.objects);
+	this.collisionPlayer();
+	this.collisionShots();
 
-Game.prototype.update = function(){	
-	if(this.player.jumping){
-		this.player.y -= this.player.jumpEnergy;
-		this.player.jumpEnergy -= this.player.gravity;
+};
+Game.prototype.collisionShots = function(){
+	for(var i=0;i<this.shots.length;){
+		if(this.shots[i].collide(this.objects, this.width, this.height)){
+			this.shots.splice(i, 1);
+		}
+		else i++;
 	}
-	else if(!this.player.onGround(this.objects)){ //not touching ground
-		//when NOT JUMPING
-		console.log("falling");
-		this.player.fallSpeed += this.player.gravity; 
-		this.player.y += this.player.fallSpeed;
-	} 
-	else{ //touching ground
-		this.player.fallSpeed = 0; //v tuto chvili uz nepada
-	}
-	
-	//move
-	var left = this.eventhandler.down["a"];
-	var right = this.eventhandler.down["d"];
-	if((left && right) || (!left && !right)){
-		this.player.updateStand();
-	}
-	else if(left) this.player.updateLeft();
-	else if(right) this.player.updateRight();
-	
+};
+Game.prototype.collisionPlayer = function(){
 	//x collisions
 	var collMoveX = this.player.collideHorizontal(this.objects);
 	var collX = collMoveX !== this.player.x;
@@ -86,10 +89,10 @@ Game.prototype.update = function(){
 		}
 	}
 	else{ //no collisions-> move bg image, if player moving
-		if(left) this.background.updateLeft(this.player.speed);
-		if(right) this.background.updateRight(this.player.speed);
+		if(this.eventhandler.down["a"]) this.background.updateLeft(this.player.speed);
+		if(this.eventhandler.down["d"]) this.background.updateRight(this.player.speed);
 	}
-	
+
 	//y collisions
 	var collMoveY = this.player.collideVertical(this.objects);
 	var collY = collMoveY !== this.player.y;
@@ -106,6 +109,9 @@ Game.prototype.draw = function(){
 	this.background.draw(this.ctx);
 	for(var i = 0;i < this.objects.length;i++){
 		this.objects[i].draw(this.ctx);
+	}
+	for(var i= 0;i<this.shots.length;i++){
+		this.shots[i].draw(this.ctx);
 	}
 	this.player.draw(this.ctx);
 };

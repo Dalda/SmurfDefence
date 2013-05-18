@@ -3,47 +3,43 @@ function Eventhandler(offset, player){
 	this.offset = offset;
 	console.log(offset.left+" "+offset.top);
 	this.down = {}; //both keys and mouse clicks
-	
+	this.mouseX;
+	this.mouseY;
+
 	var _this = this;
 	document.addEventListener("contextmenu", function(event){event.preventDefault();}); //cancel
 	
 	document.addEventListener("mousedown", function(event){_this.mouseDown(event);}); //down any
 	document.addEventListener("mouseup", function(event){_this.mouseUp(event);}); //up any
+	document.addEventListener("mousemove", function(event){_this.mouseMove(event);}); //move
 	
 	document.addEventListener("keydown", function(event){_this.keyDown(event);});
 	document.addEventListener("keyup", function(event){_this.keyUp(event);});
 }
-function Point(x, y){
-	this.x = x;
-	this.y = y;
-}
 
-Eventhandler.prototype.mouseDown = function(e){
+Eventhandler.prototype.mouseMove = function(e){
 	e.preventDefault();
 	var x = e.clientX; x -= this.offset.left;
 	var y = e.clientY; y -= this.offset.top;
+	this.mouseX = x;
+	this.mouseY = y;
+};
+Eventhandler.prototype.mouseDown = function(e){
+	e.preventDefault();
 	if(e.which == 1){//left down
-		this.down["leftup"] = false;
-		this.down["leftdown"] = new Point(x, y);
-		console.log("left down "+x+";"+y);
+		this.down["leftdown"] = true;
 	}
 	else{ //right down
-		this.down["rightup"] = false;
-		this.down["rightdown"] = new Point(x, y);
-		console.log("right down "+e.which+" "+x+";"+y);
+		this.down["rightdown"] = true
 	}
 };
 Eventhandler.prototype.mouseUp = function(e){
 	e.preventDefault();
-	var x = e.clientX; x -= this.offset.left;
-	var y = e.clientY; y -= this.offset.top;
 	if(e.which == 1){ //left up
-		this.down["leftup"] = new Point(x, y);
-		console.log("left up "+e.which+" "+x+";"+y);
+		this.down["leftdown"] = false;
 	}
 	else{ //right up
-		this.down["rightup"] = new Point(x, y);
-		console.log("right up "+e.which+" "+x+";"+y);
+		this.down["rightdown"] = false;
 	}
 };
 
