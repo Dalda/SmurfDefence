@@ -2,7 +2,7 @@ function Eventhandler(offset, player){
 	this.player = player;
 	this.offset = offset;
 	console.log(offset.left+" "+offset.top);
-	this.down = {}; //both keys and mouse clicks
+	this.down = {}; //both keys and mouse click
 	this.mouseX;
 	this.mouseY;
 
@@ -46,8 +46,9 @@ Eventhandler.prototype.mouseUp = function(e){
 Eventhandler.prototype.keyDown = function(e){
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
 	this.down[strVal] = true;
-	
-	if(strVal == "w" && !this.player.jumping){
+	if(strVal == "a") this.player.lastDirection = "l";   //for player frame
+	else if(strVal == "d") this.player.lastDirection = "r";
+	else if(strVal == "w" && !this.player.jumping){
 		this.player.beginJump();
 	}
 };

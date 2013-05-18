@@ -65,7 +65,8 @@ Game.prototype.updateShots = function(){
 };
 Game.prototype.update = function(){
 	this.updateShots();
-	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"], this.objects);
+	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"],
+						this.eventhandler.lastDirection, this.objects);
 	this.collisionPlayer();
 	this.collisionShots();
 

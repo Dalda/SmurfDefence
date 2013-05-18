@@ -8,5 +8,8 @@ Loader.prototype.loadObjects = function(objects){
 	objects.push(new Box(700, 400, 50, 50));
 	objects.push(new Box(500, 150, 100, 100));
 	objects.push(new Box(820, 340, 100, 50));
+	objects.push(new Box(650, 170, 70, 30));
+	objects.push(new Box(750, 230, 70, 30));
+	objects.push(new Box(870, 290, 50, 50));
 };
 

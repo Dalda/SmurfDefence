@@ -2,11 +2,17 @@ function Player(x, y){
 	this.boundary = x;
 	this.x = x/6;
 	this.y = y/2;
-	this.width = 60;
-	this.height = 100;
-	this.frame = 0;
-	this.shiftXA = 301; this.shiftXB = 95;
-	this.shiftYA = 386; this.shiftYB = 192;
+	//62x120 je uvnitr obrazku
+	this.ratio = 0.6;
+	this.width = 62*this.ratio;  //actual
+	this.height = 120*this.ratio;
+
+	this.frameL = -1;
+	this.frameR = -1;
+	this.frameSpeed = 2; this.frameSpeedNow = 0;
+	this.lastDirection = "r";  //r or l for frames
+	this.shiftS = 128;
+	this.shiftX = 0; this.shiftY = 0;
 	
 	this.collTolerance = 10; //collision tolerance, when the collision is detected in Game
 	
@@ -21,12 +27,12 @@ function Player(x, y){
 			
 }
 Player.prototype.im = new Image();
-Player.prototype.im.src = "assets/images/player.png";
+Player.prototype.im.src = "assets/images/smurfL.png";
 Player.prototype.draw = function(ctx){
-	ctx.drawImage(this.im, this.shiftXA, this.shiftYA, this.shiftXB, this.shiftYB,
-							this.x, this.y, this.width, this.height);
+	ctx.drawImage(this.im, this.shiftX, this.shiftY, this.shiftS, this.shiftS,
+							this.x-35*this.ratio, this.y-4*this.ratio, this.shiftS*this.ratio, this.shiftS*this.ratio); //-35 je jen zde, nikoli u kolizeChecků
 };
-Player.prototype.update = function(left, right, objects){
+Player.prototype.update = function(left, right, lastDirection, objects){
 	if(this.jumping){
 		this.y -= this.jumpEnergy;
 		this.jumpEnergy -= this.gravity;
@@ -43,7 +49,7 @@ Player.prototype.update = function(left, right, objects){
 
 	//move
 	if((left && right) || (!left && !right)){
-		this.updFrame(true);
+		this.updFrame(false, false);
 	}
 	else if(left) this.updateLeft();
 	else if(right) this.updateRight();
@@ -51,43 +57,43 @@ Player.prototype.update = function(left, right, objects){
 
 Player.prototype.updateLeft = function(){
 	this.x -= this.speed;
-	this.updFrame(false);
+	this.updFrame(true, false);
 };
 
 Player.prototype.updateRight = function(){
 	this.x += this.speed;
-	this.updFrame(false);
+	this.updFrame(false, true);
 };
 
-Player.prototype.updFrame = function(standState){
-	if(this.jumping){
-		this.frame = 0;
-		this.upd(2, 2, 87, 168);
-	}
-	else if(standState){
-		this.frame = 0;
-		this.upd(559, 2, 85, 190);
+Player.prototype.updFrame = function(left, right){
+	if(!left && !right){
+		this.frameL = -1;
+		this.frameR = -1;
+		if(this.lastDirection == "r"){
+			this.upd(3*this.shiftS, 0);
+		}
+		else{
+			this.upd(0, 4*this.shiftS);
+		}
 	}
 	else{
-		this.frame++;
-		switch(Math.floor((this.frame/5)%9)+1){
-			case 1: this.upd(301, 386, 95, 192); break;
-			case 2: this.upd(570, 194, 115, 190); break;
-			case 3: this.upd(398, 386, 133, 192); break;
-			case 4: this.upd(155, 194, 147, 190); break;
-			case 5: this.upd(785, 386, 127, 194); break;
-			case 6: this.upd(127, 582, 135, 198); break;
-			case 7: this.upd(264, 582, 111, 200); break;
-			case 8: this.upd(2, 582, 123, 198); break;
-			case 9: this.upd(533, 386, 115, 192); break;
+		if(left){
+			if(++this.frameSpeedNow%this.frameSpeed == 0){
+				this.frameL = (this.frameL+1)%16;
+			}
+			this.upd(this.shiftS*(3-((this.frameL+3)%4)), (4*this.shiftS)+this.shiftS*(((Math.floor((this.frameL+3)/4))%4)));
+		}
+		else if(right){
+			if(++this.frameSpeedNow%this.frameSpeed == 0){
+				this.frameR = (this.frameR+1)%16;
+			}
+			this.upd(this.shiftS*((this.frameR+3)%4), this.shiftS*(((Math.floor((this.frameR+3)/4))%4)));
 		}
 	}
 };
-Player.prototype.upd = function(a, b, c, d){
-	this.shiftXA = a;
-	this.shiftYA = b;
-	this.shiftXB = c;
-	this.shiftYB = d;
+Player.prototype.upd = function(x, y){
+	this.shiftX = x;
+	this.shiftY = y;
 };
 
 Player.prototype.beginJump = function(){
