@@ -19,8 +19,8 @@ function Eventhandler(offset, player){
 
 Eventhandler.prototype.mouseMove = function(e){
 	e.preventDefault();
-	var x = e.clientX; x -= this.offset.left;
-	var y = e.clientY; y -= this.offset.top;
+	var x = e.pageX; x -= this.offset.left;
+	var y = e.pageY; y -= this.offset.top;
 	this.mouseX = x;
 	this.mouseY = y;
 };
@@ -46,8 +46,8 @@ Eventhandler.prototype.mouseUp = function(e){
 Eventhandler.prototype.keyDown = function(e){
 	var strVal = String.fromCharCode(e.keyCode).toLowerCase();
 	this.down[strVal] = true;
-	if(strVal == "a") this.player.lastDirection = "l";   //for player frame
-	else if(strVal == "d") this.player.lastDirection = "r";
+	if(strVal == "a") this.player.facingR = false;
+	else if(strVal == "d") this.player.facingR = true;
 	else if(strVal == "w" && !this.player.jumping && this.player.fallSpeed == 0){
 		this.player.beginJump();
 	}

@@ -55,7 +55,9 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 };
 Game.prototype.updateShots = function(){
 	if(!this.shootingLock && this.eventhandler.down["leftdown"]){
-		this.shots.push(new Shot(this.player.x, this.player.y, this.eventhandler.mouseX, this.eventhandler.mouseY));
+		var shotNew = new Shot(this.player.x, this.player.y);
+		shotNew.init(this.eventhandler.mouseX, this.eventhandler.mouseY, this.player.facingR);
+		this.shots.push(shotNew);
 		this.shootingLock = true;
 		var _this = this;
 		window.setTimeout(function(){_this.shootingLock = false;}, 300);
@@ -66,8 +68,7 @@ Game.prototype.updateShots = function(){
 };
 Game.prototype.update = function(){
 	this.updateShots();
-	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"],
-						this.eventhandler.lastDirection, this.objects);
+	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"], this.objects);
 	this.collisionPlayer();
 	this.collisionShots();
 

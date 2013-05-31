@@ -10,7 +10,7 @@ function Player(x, y){
 	this.frameL = -1;
 	this.frameR = -1;
 	this.frameSpeed = 2; this.frameSpeedNow = 0;
-	this.lastDirection = "r";  //r or l for frames
+	this.facingR = true; // jakym smerem se diva
 	this.shiftS = 128;
 	this.shiftX = 0; this.shiftY = 0;
 	
@@ -29,10 +29,11 @@ function Player(x, y){
 Player.prototype.im = new Image();
 Player.prototype.im.src = "assets/images/smurfL.png";
 Player.prototype.draw = function(ctx){
+	ctx.fillRect(this.x-5, this.y-5, 10, 10);
 	ctx.drawImage(this.im, this.shiftX, this.shiftY, this.shiftS, this.shiftS,
 							this.x-35*this.ratio, this.y-4*this.ratio, this.shiftS*this.ratio, this.shiftS*this.ratio); //-35 je jen zde, nikoli u kolizeChecků
 };
-Player.prototype.update = function(left, right, lastDirection, objects){
+Player.prototype.update = function(left, right, objects){
 	if(this.jumping){
 		this.y -= this.jumpEnergy;
 		this.jumpEnergy -= this.gravity;
@@ -69,7 +70,7 @@ Player.prototype.updFrame = function(left, right){
 	if(!left && !right){
 		this.frameL = -1;
 		this.frameR = -1;
-		if(this.lastDirection == "r"){
+		if(this.facingR){
 			this.upd(3*this.shiftS, 0);
 		}
 		else{
