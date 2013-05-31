@@ -1,6 +1,7 @@
-function Loader(){
-	//zkus pouzit onu knihovnu s fyzikou?
-	
+function Loader(width, height){
+	this.width = width;
+	this.height = height;
+	this.background = new Background(this.width, this.height);
 }
 Loader.prototype.loadObjects = function(objects){
 	//every objects has to have x, y, width, height - for collision check
@@ -12,4 +13,21 @@ Loader.prototype.loadObjects = function(objects){
 	objects.push(new Box(750, 230, 70, 30));
 	objects.push(new Box(870, 290, 50, 50));
 };
+
+function Background(width, height){
+	//roztazene pres cely canvas a posouva se spolu s hracem
+	this.width = width;
+	this.height = height;
+	this.shift = 100;
+	this.multiplier = 0.05;
+}
+
+Background.prototype.im = new Image();
+Background.prototype.im.src = "assets/images/hell.jpg";
+Background.prototype.draw = function(ctx){
+	ctx.drawImage(this.im, this.shift, 0, this.width, this.height,
+		0, 0, this.width, this.height-50);
+};
+
+
 

@@ -8,7 +8,6 @@ function Shot(x, y){
 	this.bounces = 5; //vydrzi 5 odrazy od zeme
 }
 Shot.prototype.init = function(nx, ny, facingR){
-	console.log(this.x+";"+this.y+";"+nx+";"+ny+"; "+facingR);
 	var angle = 0;
 	if(facingR){ //kouka se doprava
 		if(nx < this.x+45){ //mys vlevo
@@ -56,19 +55,22 @@ Shot.prototype.collide = function(objects, width, height){
 	for(var i=0;i<objects.length;i++){
 		var ox = objects[i].x;var oxS = objects[i].width;
 		var oy = objects[i].y;var oyS = objects[i].height;
-		if(this.x > ox && this.x < ox+oxS && this.y > oy && this.y < oy+oyS){
-			var bncd = false;
-			if((this.x<=ox && this.x+this.size*2 >= ox) || (this.x<=ox+oxS && this.x+this.size*2 >=ox+oxS)){
-				bncd = true;
-				this.vx = -this.vx;
-			}
-			if((this.y<=oy && this.y+this.size*2 >= oy) || (this.y<=oy+oyS && this.y+this.size*2 >=oy+oyS)){
-				bncd = true;
-				this.vy = -this.vy;
-			}
-			if(!bncd) return true;
-			this.bounces--;
-		}
+		if(this.x > ox && this.x < ox+oxS && this.y > oy && this.y < oy+oyS) return true;
+																		//!!!!!!!!!!!!!!!!
+//		{
+//			console.log("ted");
+//			var bncd = false;
+//			if((this.x<=ox && this.x+this.size*2 >= ox) || (this.x<=ox+oxS && this.x+this.size*2 >=ox+oxS)){
+//				bncd = true;
+//				this.vx = -this.vx;
+//			}
+//			if((this.y<=oy && this.y+this.size*2 >= oy) || (this.y<=oy+oyS && this.y+this.size*2 >=oy+oyS)){
+//				bncd = true;
+//				this.vy = -this.vy;
+//			}
+//			if(!bncd) return true;
+//			this.bounces--;
+//		}
 	}
 	return false;
 };

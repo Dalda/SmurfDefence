@@ -38,8 +38,7 @@ Player.prototype.update = function(left, right, objects){
 		this.y -= this.jumpEnergy;
 		this.jumpEnergy -= this.gravity;
 	}
-	else if(!this.onGround(objects)){ //not touching ground
-		//when NOT JUMPING
+	else if(!this.onGround(objects)){ //not touching ground	//when NOT JUMPING
 		console.log("falling");
 		this.fallSpeed += this.gravity;
 		this.y += this.fallSpeed;
@@ -54,6 +53,8 @@ Player.prototype.update = function(left, right, objects){
 	}
 	else if(left) this.updateLeft();
 	else if(right) this.updateRight();
+
+	this.collisions(objects);
 };
 
 Player.prototype.updateLeft = function(){
@@ -70,12 +71,8 @@ Player.prototype.updFrame = function(left, right){
 	if(!left && !right){
 		this.frameL = -1;
 		this.frameR = -1;
-		if(this.facingR){
-			this.upd(3*this.shiftS, 0);
-		}
-		else{
-			this.upd(0, 4*this.shiftS);
-		}
+		if(this.facingR) this.upd(3*this.shiftS, 0);
+		else this.upd(0, 4*this.shiftS);
 	}
 	else{
 		if(left){
@@ -104,6 +101,27 @@ Player.prototype.beginJump = function(){
 Player.prototype.endJump = function(){
 	this.jumping = false;
 	this.jumpEnergy = 0;
+};
+
+Player.prototype.collisions = function(objects){
+	//x collisions
+	var collMoveX = this.collideHorizontal(objects);
+	var collX = collMoveX !== this.x;
+	if(collX){
+		if(Math.abs(collMoveX-this.x) < this.collTolerance){
+			console.log("horizonatal collision");
+			this.x = collMoveX;
+		}
+	}
+	//y collisions
+	var collMoveY = this.collideVertical(objects);
+	var collY = collMoveY !== this.y;
+	if(collY){
+		if(Math.abs(collMoveY-this.y) < this.collTolerance){
+			console.log("vertical collision");
+			this.y = collMoveY;
+		}
+	}
 };
 
 //collision functions return coords where to move

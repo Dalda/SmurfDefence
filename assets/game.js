@@ -7,13 +7,15 @@ function Game(){
 	this.objects = [];
 	this.shots = [];
 	this.shootingLock = false;
+	this.bombActive = false; //only one bomb object at once
+	this.bombLock = false;
 
 	this.fps = 60;
 	this.interval = false;
 	this.stopped = true;
-	this.loader = new Loader();
+	this.loader = new Loader(this.width, this.height);
 	this.sound = new Sound();
-	this.background = new Background(this.width, this.height);
+
 	this.player = new Player(this.width, this.height);
 	this.eventhandler;
 	//maybe Eventhandler should be main object with Game as a member variable-ask Kukas...
@@ -24,7 +26,7 @@ Game.prototype.init = function(){
 	this.canvas.height = this.height;
 	document.body.appendChild(this.canvas);
 	
-	this.eventhandler =  new Eventhandler($(this.canvas).offset(), this.player);
+	this.eventhandler = new Eventhandler($(this.canvas).offset(), this.player);
 	this.loader.loadObjects(this.objects);
 	this.sound.init();
 	this.startGame();
@@ -41,10 +43,10 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 	//meanwhile processing player input
 	_this.update();
 	_this.draw();
-	if(_this.eventhandler.down["rightdown"]){
+	if(_this.eventhandler.down["o"]){
 		console.log("swap music");
 		_this.sound.swap();
-		_this.eventhandler.down["rightdown"] = false;
+		_this.eventhandler.down["o"] = false;
 	}
 	if(_this.eventhandler.down["p"]){
 		_this.stopped = true;
@@ -64,57 +66,52 @@ Game.prototype.updateShots = function(){
 	}
 	for(var i=0;i<this.shots.length;i++){
 		this.shots[i].update();
-	}
-};
-Game.prototype.update = function(){
-	this.updateShots();
-	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"], this.objects);
-	this.collisionPlayer();
-	this.collisionShots();
-
-};
-Game.prototype.collisionShots = function(){
-	for(var i=0;i<this.shots.length;){
-		if(this.shots[i].collide(this.objects, this.width, this.height)){
+		if(this.shots[i].collide(this.objects, this.width, this.height)){  //collisions check
 			this.shots.splice(i, 1);
 		}
 		else i++;
 	}
 };
-Game.prototype.collisionPlayer = function(){
-	//x collisions
-	var collMoveX = this.player.collideHorizontal(this.objects);
-	var collX = collMoveX !== this.player.x;
-	if(collX){
-		if(Math.abs(collMoveX-this.player.x) < this.player.collTolerance){
-			console.log("horizonatal collision");
-			this.player.x = collMoveX;
+Game.prototype.updateBomb = function(){
+	if(!this.bombLock){
+		if(this.eventhandler.down["rightdown"]){
+			var bombNew = new Bomb(this.player.x, this.player.y);
+			bombNew.init(this.eventhandler.mouseX, this.eventhandler.mouseY, this.player.facingR);
+			this.bombActive = bombNew;
+			this.bombLock = true;
+			var _this = this;
+			window.setTimeout(function(){_this.bombLock = false;}, 3000); //3sec
 		}
 	}
-	else{ //no collisions-> move bg image, if player moving
-		if(this.eventhandler.down["a"]) this.background.updateLeft(this.player.speed);
-		if(this.eventhandler.down["d"]) this.background.updateRight(this.player.speed);
-	}
-
-	//y collisions
-	var collMoveY = this.player.collideVertical(this.objects);
-	var collY = collMoveY !== this.player.y;
-	if(collY){
-		if(Math.abs(collMoveY-this.player.y) < this.player.collTolerance){
-			console.log("vertical collision");
-			this.player.y = collMoveY;
+	else{
+		console.log("lock");
+		this.bombActive.update();
+		this.bombActive.collide(this.objects);
+		if(this.bombActive.timeToExplode <= 0){
+			var expl = new Explosion(this.bombActive.x, this.bombActive.y);
+			this.bombActive = false;
 		}
 	}
 };
+Game.prototype.update = function(){
+	this.player.update(this.eventhandler.down["a"], this.eventhandler.down["d"], this.objects);
+	this.updateBomb();
+	this.updateShots();
+};
+
 
 Game.prototype.draw = function(){
 	this.ctx.clearRect(0, 0, this.width, this.height);
-	this.background.draw(this.ctx);
+	this.loader.background.draw(this.ctx);
 	for(var i = 0;i < this.objects.length;i++){
 		this.objects[i].draw(this.ctx);
 	}
 	for(var i= 0;i<this.shots.length;i++){
 		this.shots[i].draw(this.ctx);
 	}
+	if(this.bombActive){
+		this.bombActive.draw(this.ctx);
+	}
+
 	this.player.draw(this.ctx);
 };

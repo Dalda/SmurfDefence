@@ -1,21 +1,21 @@
-function Grenade(x, y, nx, ny){
+function Bomb(x, y){
 	this.x = x;
 	this.y = y;
 	this.speed = 5;
-	this.size = 10;
+	this.size = 20;
 	this.vx = 0;
 	this.vy = 0;
 
-	this.timeToExplode = 180;
+	this.timeToExplode = 400;
 }
-Grenade.prototype.im = new Image();
-Grenade.prototype.im.src = "grenade.png";   //bude se tocit - sprite
-Grenade.prototype.draw = function(ctx){
+Bomb.prototype.im = new Image();
+Bomb.prototype.im.src = "assets/images/bomb.png";
+Bomb.prototype.draw = function(ctx){
+	console.log("ok");
 	ctx.drawImage(this.im, this.x, this.y, this.size, this.size);
 }
 
-Grenade.prototype.init = function(nx, ny, facingR){            //kopie stejne funkce v Shot.js
-	console.log(this.x+";"+this.y+";"+nx+";"+ny+"; "+facingR);
+Bomb.prototype.init = function(nx, ny, facingR){            //kopie stejne funkce v Shot.js
 	var angle = 0;
 	if(facingR){ //kouka se doprava
 		if(nx < this.x+45){ //mys vlevo
@@ -32,4 +32,17 @@ Grenade.prototype.init = function(nx, ny, facingR){            //kopie stejne fu
 		this.vx = -this.speed*Math.cos(angle);
 	}
 	this.vy = -this.speed*Math.sin(angle);
+};
+
+Bomb.prototype.update = function(){
+	this.timeToExplode--;
+	this.y += this.vy;
+	this.x += this.vx;
+	this.vy += 0.1;
+	this.vy *= 0.99;
+	this.vx *= 0.99;
+};
+
+Bomb.prototype.collide = function(){
+	//
 };

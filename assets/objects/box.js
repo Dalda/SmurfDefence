@@ -3,6 +3,7 @@ function Box(x, y, width, height){
 	this.y = y;
 	this.width = width;
 	this.height = height;
+	this.durability = 100;
 }
 
 Box.prototype.im = new Image();
