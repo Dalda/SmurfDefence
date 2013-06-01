@@ -123,8 +123,8 @@ Game.prototype.mouseMove = function(e){
 	e.preventDefault();
 	var x = e.pageX; x -= this.offset.left;
 	var y = e.pageY; y -= this.offset.top;
-	this.mouseX = x;
-	this.mouseY = y;
+	this.mouseX = x+15; //15 kvuli velikost kursoru
+	this.mouseY = y+15;
 };
 Game.prototype.mouseDown = function(e){
 	e.preventDefault();

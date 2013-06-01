@@ -5,7 +5,7 @@ function Loader(width, height){
 }
 Loader.prototype.loadObjects = function(objects){
 	//every objects has to have x, y, width, height - for collision check
-	objects.push(new Ground(0, 450, 1000, 50)); 
+	objects.push(new Ground(0, 450, 1000, 50));
 	objects.push(new Box(700, 400, 50, 50));
 	objects.push(new Box(500, 150, 100, 100));
 	objects.push(new Box(820, 340, 100, 50));
@@ -15,11 +15,9 @@ Loader.prototype.loadObjects = function(objects){
 };
 
 function Background(width, height){
-	//roztazene pres cely canvas a posouva se spolu s hracem
 	this.width = width;
 	this.height = height;
 	this.shift = 100;
-	this.multiplier = 0.05;
 }
 
 Background.prototype.im = new Image();
