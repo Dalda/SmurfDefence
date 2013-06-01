@@ -51,47 +51,47 @@ Player.prototype.update = function(left, right, objects){
 	if((left && right) || (!left && !right)){
 		this.updFrame(false, false);
 	}
-	else if(left) this.updateLeft();
-	else if(right) this.updateRight();
+	else if(left){
+		this.x -= this.speed;
+		this.updFrame(true, false);
+	}
+	else if(right){
+		this.x += this.speed;
+		this.updFrame(false, true);
+	}
 
 	this.collisions(objects);
-};
-
-Player.prototype.updateLeft = function(){
-	this.x -= this.speed;
-	this.updFrame(true, false);
-};
-
-Player.prototype.updateRight = function(){
-	this.x += this.speed;
-	this.updFrame(false, true);
 };
 
 Player.prototype.updFrame = function(left, right){
 	if(!left && !right){
 		this.frameL = -1;
 		this.frameR = -1;
-		if(this.facingR) this.upd(3*this.shiftS, 0);
-		else this.upd(0, 4*this.shiftS);
+		if(this.facingR){
+			this.shiftX = 3*this.shiftS;
+			this.shiftY = 0;
+		}
+		else{
+			this.shiftX = 0;
+			this.shiftY = 4*this.shiftS;
+		}
 	}
 	else{
 		if(left){
 			if(++this.frameSpeedNow%this.frameSpeed == 0){
 				this.frameL = (this.frameL+1)%16;
 			}
-			this.upd(this.shiftS*(3-((this.frameL+3)%4)), (4*this.shiftS)+this.shiftS*(((Math.floor((this.frameL+3)/4))%4)));
+			this.shiftX = this.shiftS*(3-((this.frameL+3)%4));
+			this.shiftY = (4*this.shiftS)+this.shiftS*(((Math.floor((this.frameL+3)/4))%4));
 		}
 		else if(right){
 			if(++this.frameSpeedNow%this.frameSpeed == 0){
 				this.frameR = (this.frameR+1)%16;
 			}
-			this.upd(this.shiftS*((this.frameR+3)%4), this.shiftS*(((Math.floor((this.frameR+3)/4))%4)));
+			this.shiftX = this.shiftS*((this.frameR+3)%4);
+			this.shiftY = this.shiftS*(((Math.floor((this.frameR+3)/4))%4));
 		}
 	}
-};
-Player.prototype.upd = function(x, y){
-	this.shiftX = x;
-	this.shiftY = y;
 };
 
 Player.prototype.beginJump = function(){
@@ -124,8 +124,7 @@ Player.prototype.collisions = function(objects){
 	}
 };
 
-//collision functions return coords where to move
-//pozici kde bude na kolidujici objekt tesne nalepen
+//vrati pozici kde bude na kolidujici objekt tesne nalepen
 Player.prototype.collideHorizontal = function(objects){
 	if(this.x < 0) return 0;
 	else if(this.x > this.boundary-this.width){
@@ -172,7 +171,7 @@ Player.prototype.onGround = function(objects){ //top side collision test
 	// with y+1 for checking if there is ground underneath
 	for(var i=0;i<objects.length;i++){
 		var ox = objects[i].x;var oxS = objects[i].width;
-		var oy = objects[i].y;var oyS = objects[i].height;
+		var oy = objects[i].y;
 		if(ox-this.width < this.x && ox+oxS+this.width > this.x+this.width){ //x collision test
 			if(oy > this.y+1 && oy < this.y+1+this.height){ //y collision test
 				return true; //on the ground
