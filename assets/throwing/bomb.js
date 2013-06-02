@@ -1,5 +1,5 @@
-function Bomb(x, y){
-	Throwing.call(this, x+20, y+30, 20, 5); //constructor
+function Bomb(x, y, shotPow){
+	Throwing.call(this, x+20, y+30, 20, 3+shotPow/5); //constructor
 
 	this.timeToExplode = 180; //3sec
 }

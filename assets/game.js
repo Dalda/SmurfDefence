@@ -61,8 +61,8 @@ Game.prototype.update = function(){
 
 Game.prototype.updateShots = function(){
 	if(!this.shootingLock && this.down["leftdown"]){
-		var shotNew = new Shot(this.player.x, this.player.y);
-		shotNew.init(this.mouseX, this.mouseY, this.player.facingR);
+		var shotNew = new Shot(this.player.x, this.player.y, this.player.shotPower);
+		shotNew.init(this.mouseX, this.mouseY, this.player.facingR, this.player.shotAccuracy);
 		this.shots.push(shotNew);
 		this.shootingLock = true;
 		var _this = this;
@@ -132,8 +132,8 @@ Game.prototype.mouseDown = function(e){
 	else{ //right down
 		this.down["rightdown"] = true;
 		if(!this.bombLock){
-			var bombNew = new Bomb(this.player.x, this.player.y);
-			bombNew.init(this.mouseX, this.mouseY, this.player.facingR);
+			var bombNew = new Bomb(this.player.x, this.player.y, this.player.shotPower);
+			bombNew.init(this.mouseX, this.mouseY, this.player.facingR, this.player.shotAccuracy);
 			this.bombActive = bombNew;
 			this.bombLock = true;
 			var _this = this;

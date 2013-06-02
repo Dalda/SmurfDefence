@@ -15,9 +15,12 @@ function Player(x, y){
 	this.shiftX = 0; this.shiftY = 0;
 	
 	this.collTolerance = 10; //collision tolerance, when the collision is detected in Game
-	
+
+	this.shotPower = 3;
+	this.shotAccuracy = 0.3;
 	this.health = 100;
 	this.speed = 2.4;
+
 	this.jumping = false;
 	this.jumpEnergy = 0; //pro simulaci skokové křivky
 	this.gravity = 0.2; //tvar skokové křivky
