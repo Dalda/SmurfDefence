@@ -2,6 +2,7 @@ function Game(){
 	this.canvas = document.createElement("canvas");
 	this.width = 1000;
 	this.height = 500;
+	this.gameWidth = 2000; /* 0-2000, vsechny coords kladne; gameHeight = height ... vyska se nemeni */
 	this.ctx = this.canvas.getContext("2d");
 	
 	this.objects = [];
@@ -13,9 +14,9 @@ function Game(){
 
 	this.interval = false;
 	this.stopped = true;
-	this.loader = new Loader(this.width, this.height);
+	this.loader = new Loader(this.gameWidth, this.height);
 	this.sound = new Sound();
-	this.player = new Player(this.width, this.height);
+	this.player = new Player(this.width/2, this.height/2); /* zasazujeme ho do gamewidth(0-gameWidth) a gameheight */
 
 	this.offset = false; //initialized in init()
 	this.down = {}; //both keys and mouse click
@@ -39,7 +40,7 @@ Game.prototype.init = function(){
 	document.body.appendChild(this.canvas);
 	this.offset = $(this.canvas).offset();
 
-	this.loader.loadObjects(this.objects);
+	this.loader.loadObjects(this.objects, this.gameWidth, this.height);
 	this.sound.init();
 	this.stopped = false;
 	var _this = this;
@@ -53,7 +54,7 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 };
 
 Game.prototype.update = function(){
-	this.player.update(this.down["a"], this.down["d"], this.objects);
+	this.player.update(this.down["a"], this.down["d"], this.objects, this.gameWidth);
 	this.updateShots();
 	this.updateBomb();
 	this.updateExplosions();
@@ -70,7 +71,7 @@ Game.prototype.updateShots = function(){
 	}
 	for(var i=0;i<this.shots.length;){
 		this.shots[i].update();
-		if(this.shots[i].collide(this.objects, this.width, this.height)){  //collisions check
+		if(this.shots[i].collide(this.objects, this.gameWidth, this.height)){  //collisions check
 			this.shots[i].explode(this.explosions);
 			this.sound.shoot();
 			this.shots.splice(i, 1);
@@ -81,7 +82,7 @@ Game.prototype.updateShots = function(){
 Game.prototype.updateBomb = function(){
 	if(this.bombActive){
 		this.bombActive.update();
-		if(this.bombActive.collide(this.objects, this.width, this.height) //collision check
+		if(this.bombActive.collide(this.objects, this.gameWidth, this.height) //collision check
 		   || this.bombActive.timeToExplode <= 0){
 			this.bombActive.explode(this.explosions);
 			this.sound.explode();
@@ -101,20 +102,29 @@ Game.prototype.updateExplosions = function(){
 
 Game.prototype.draw = function(){
 	this.ctx.clearRect(0, 0, this.width, this.height);
-	this.loader.background.draw(this.ctx);
-	for(var i = 0;i < this.objects.length;i++){
-		this.objects[i].draw(this.ctx);
-	}
-	for(var i= 0;i<this.shots.length;i++){
-		this.shots[i].draw(this.ctx);
-	}
-	if(this.bombActive){
-		this.bombActive.draw(this.ctx);
-	}
-	this.player.draw(this.ctx);
-	for(var i=0;i<this.explosions.length;i++){
-		this.explosions[i].draw(this.ctx);
-	}
+	this.ctx.save();
+	var transl = this.player.x-this.width/2;
+	if(transl < 0) transl = 0;
+	else if(transl+this.width > this.gameWidth) transl = this.gameWidth-this.width;
+	///////////////////////////////////////////
+		this.ctx.translate(-transl, 0);  /* posun vsechny objekty doleva, kdyz hrac jde doprava */
+
+		this.loader.background.draw(this.ctx);
+		for(var i = 0;i < this.objects.length;i++){
+			this.objects[i].draw(this.ctx);
+		}
+		for(var i= 0;i<this.shots.length;i++){
+			this.shots[i].draw(this.ctx);
+		}
+		if(this.bombActive){
+			this.bombActive.draw(this.ctx);
+		}
+		this.player.draw(this.ctx);
+		for(var i=0;i<this.explosions.length;i++){
+			this.explosions[i].draw(this.ctx);
+		}
+	////////////////////////////////////////////
+	this.ctx.restore();
 };
 
 Game.prototype.mouseMove = function(e){

@@ -11,7 +11,7 @@ Bomb.prototype.draw = function(ctx){
 	ctx.drawImage(this.im, this.x, this.y, this.size, this.size);
 };
 Bomb.prototype.explode = function(explosions){
-	explosions.push(new Explosion(this.x, this.y, 0));
+	explosions.push(new Explosion(this.x, this.y, 1));
 };
 
 Bomb.prototype.update = function(){

@@ -27,11 +27,11 @@ Throwing.prototype.init = function(nx, ny, facingR, accuracy){
 	this.vy = -this.speed*Math.sin(angle);
 };
 
-Throwing.prototype.collide = function(objects, width, height){    //return true-> delete/explode
+Throwing.prototype.collide = function(objects, gameWidth, height){    //return true-> delete/explode
 	var lessB = this instanceof Shot;
 	if(lessB && this.bounces <= 0) return true; /* uz moc odrazu, asi pomale */
 
-	if(this.x+this.size < 0 || this.x > width) return true;
+	if(this.x+this.size < 0 || this.x > gameWidth) return true;
 
 	if(this.y+this.size > height-50){ /* ground */
 		this.y = height-50-this.size;
@@ -45,7 +45,7 @@ Throwing.prototype.collide = function(objects, width, height){    //return true-
 		var ox = objects[i].x; var oxS = objects[i].width;
 		var oy = objects[i].y; var oyS = objects[i].height;
 		if(this.x+this.size > ox && this.x < ox+oxS && this.y+this.size > oy && this.y < oy+oyS){ /* inside */
-
+		  	/* bounce from boxes ? */
 			if(lessB) this.bounces--;
 			return true;
 		}

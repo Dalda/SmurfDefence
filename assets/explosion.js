@@ -13,7 +13,7 @@ Explosion.prototype.draw = function(ctx){
 			ctx.fillRect(this.x-this.state, this.y-this.state, this.state*2, this.state*2);
 			break;
 		case 1:
-			ctx.fillStyle = "#FFFFFF";
+			ctx.fillStyle = "#FF9999";
 			ctx.fillRect(this.x-this.state, this.y-this.state, this.state*2, this.state*2);
 			break;
 	}

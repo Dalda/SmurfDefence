@@ -14,7 +14,7 @@ Shot.prototype.draw = function(ctx){
 };
 
 Shot.prototype.explode = function(explosions){
-	explosions.push(new Explosion(this.x, this.y, 1));
+	explosions.push(new Explosion(this.x, this.y, 0));
 };
 
 Shot.prototype.update = function(){
