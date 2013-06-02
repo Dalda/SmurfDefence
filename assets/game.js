@@ -68,11 +68,11 @@ Game.prototype.updateShots = function(){
 		var _this = this;
 		window.setTimeout(function(){_this.shootingLock = false;}, 300);
 	}
-	for(var i=0;i<this.shots.length;i++){
+	for(var i=0;i<this.shots.length;){
 		this.shots[i].update();
-	}
-	for(var i=0;i<this.shots.length;i++){
 		if(this.shots[i].collide(this.objects, this.width, this.height)){  //collisions check
+			this.shots[i].explode(this.explosions);
+			this.sound.shoot();
 			this.shots.splice(i, 1);
 		}
 		else i++;
@@ -81,11 +81,9 @@ Game.prototype.updateShots = function(){
 Game.prototype.updateBomb = function(){
 	if(this.bombActive){
 		this.bombActive.update();
-		if(this.bombActive.collide(this.objects, this.width, this.height)){ //collision check
-			this.bombActive = false;
-		}
-		if(this.bombActive.timeToExplode <= 0){
-			this.explosions.push(new Explosion(this.bombActive.x, this.bombActive.y));
+		if(this.bombActive.collide(this.objects, this.width, this.height) //collision check
+		   || this.bombActive.timeToExplode <= 0){
+			this.bombActive.explode(this.explosions);
 			this.sound.explode();
 			this.bombActive = false;
 		}

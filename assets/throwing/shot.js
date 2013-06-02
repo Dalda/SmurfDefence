@@ -1,7 +1,7 @@
 function Shot(x, y){
 	Throwing.call(this, x+20, y+30, 4, Math.random()*3+7); //constructor
 
-	this.bounces = 5; //vydrzi 5 odrazu od zeme
+	this.bounces = 3; //vydrzi 4 odrazu od zeme
 }
 Shot.prototype = Object.create(Throwing.prototype);
 
@@ -11,6 +11,10 @@ Shot.prototype.draw = function(ctx){
 	ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, true);
 	ctx.closePath();
 	ctx.fill();
+};
+
+Shot.prototype.explode = function(explosions){
+	explosions.push(new Explosion(this.x, this.y, 1));
 };
 
 Shot.prototype.update = function(){

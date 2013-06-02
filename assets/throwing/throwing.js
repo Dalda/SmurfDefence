@@ -27,13 +27,13 @@ Throwing.prototype.init = function(nx, ny, facingR){
 	this.vy = -this.speed*Math.sin(angle);
 };
 
-Throwing.prototype.collide = function(objects, width, height){
+Throwing.prototype.collide = function(objects, width, height){    //return true-> delete/explode
 	var lessB = this instanceof Shot;
-	if(lessB && this.bounces <= 0) return true; //uz moc odrazu, asi pomale
+	if(lessB && this.bounces <= 0) return true; /* uz moc odrazu, asi pomale */
 
 	if(this.x+this.size < 0 || this.x > width) return true;
 
-	if(this.y+this.size > height-50){ //ground
+	if(this.y+this.size > height-50){ /* ground */
 		this.y = height-50-this.size;
 		this.vy = -Math.abs(this.vy);
 		this.vy *= 0.7;
@@ -41,26 +41,13 @@ Throwing.prototype.collide = function(objects, width, height){
 		return false;
 	}
 
-	for(var i=0;i<objects.length;i++){
+	for(var i=1;i<objects.length;i++){ /* od indexu 1, tedy bez ground */
 		var ox = objects[i].x; var oxS = objects[i].width;
 		var oy = objects[i].y; var oyS = objects[i].height;
-		if(this.x+this.size > ox && this.x < ox+oxS && this.y+this.size > oy && this.y < oy+oyS){
-			console.log("ted");
-			var midx = this.x+this.size/2;
-			var midy = this.y+this.size/2;
-			var leva = Math.abs(midx-ox);  var prava = Math.abs(midx-(ox+oxS));
-			var horni = Math.abs(midy-oy); var dolni = Math.abs(midy-(oy+oyS));
-			if(Math.min(leva, prava) < Math.min(horni, dolni)){ //priletel z prava nebo leva
-				if(leva) this.x = ox-this.size;
-				else this.x = ox+oxS;
-				this.vx = -this.vx;
-			}
-			else{ //priletel s hora nebo dola
-				if(horni) this.y = oy-this.size;
-				else this.y = oy+oyS;
-				this.vy = -this.vy;
-			}
+		if(this.x+this.size > ox && this.x < ox+oxS && this.y+this.size > oy && this.y < oy+oyS){ /* inside */
+
 			if(lessB) this.bounces--;
+			return true;
 		}
 	}
 	return false;
