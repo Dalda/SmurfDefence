@@ -36,18 +36,42 @@ Throwing.prototype.collide = function(objects, gameWidth, height){    //return t
 	if(this.y+this.size > height-50){ /* ground */
 		this.y = height-50-this.size;
 		this.vy = -Math.abs(this.vy);
-		this.vy *= 0.7;
+		this.vy *= 0.75;
 		if(lessB) this.bounces--;
 		return false;
 	}
 
 	for(var i=1;i<objects.length;i++){ /* od indexu 1, tedy bez ground */
-		var ox = objects[i].x; var oxS = objects[i].width;
-		var oy = objects[i].y; var oyS = objects[i].height;
+		var ox = objects[i].x; var oxS = objects[i].xSize;
+		var oy = objects[i].y; var oyS = objects[i].ySize;
 		if(this.x+this.size > ox && this.x < ox+oxS && this.y+this.size > oy && this.y < oy+oyS){ /* inside */
-		  	/* bounce from boxes ? */
+		  	/* bounce from boxes*/
+			var tmx =  this.x+this.size/2;	var tmy = this.y+this.size/2;
+			var ar = new Array();
+			ar.push({name:"leftS", val: Math.abs(tmx-ox)}, {name:"rightS", val: Math.abs(tmx-(ox+oxS))},
+				{name: "upS", val: Math.abs(tmy-oy)}, {name: "downS", val: Math.abs(tmy-(oy+oyS))});
+			ar.sort(function(a, b){ return a.val- b.val});
+			/*ke ktere strane to je nejbliz? */
+			var closest = ar[0].name;
+			switch(closest){
+				case "leftS":
+					this.x = ox-this.size;
+					this.vx = -Math.abs(this.vx); //abs jen pro jistotu
+					break;
+				case "rightS":
+					this.x = ox+oxS;
+					this.vx = Math.abs(this.vx); //kladne poleti zpet doprava
+					break;
+				case "upS":
+					this.y = oy-this.size;
+					this.vy = -Math.abs(this.vy);
+					break;
+				case "downS":
+					this.y = oy+oyS;
+					this.vy = Math.abs(this.vy);
+					break;
+			}
 			if(lessB) this.bounces--;
-			return true;
 		}
 	}
 	return false;

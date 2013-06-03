@@ -20,6 +20,7 @@ function Game(){
 
 	this.offset = false; //initialized in init()
 	this.down = {}; //both keys and mouse click
+	this.transl = 0;
 	this.mouseX;
 	this.mouseY;
 
@@ -103,11 +104,11 @@ Game.prototype.updateExplosions = function(){
 Game.prototype.draw = function(){
 	this.ctx.clearRect(0, 0, this.width, this.height);
 	this.ctx.save();
-	var transl = this.player.x-this.width/2;
-	if(transl < 0) transl = 0;
-	else if(transl+this.width > this.gameWidth) transl = this.gameWidth-this.width;
+	this.transl = this.player.x-this.width/2;
+	if(this.transl < 0) this.transl = 0;
+	else if(this.transl+this.width > this.gameWidth) this.transl = this.gameWidth-this.width;
 	///////////////////////////////////////////
-		this.ctx.translate(-transl, 0);  /* posun vsechny objekty doleva, kdyz hrac jde doprava */
+		this.ctx.translate(-this.transl, 0);  /* posun vsechny objekty doleva, kdyz hrac jde doprava */
 
 		this.loader.background.draw(this.ctx);
 		for(var i = 0;i < this.objects.length;i++){
@@ -131,9 +132,10 @@ Game.prototype.mouseMove = function(e){
 	e.preventDefault();
 	var x = e.pageX; x -= this.offset.left;
 	var y = e.pageY; y -= this.offset.top;
-	this.mouseX = x+15; //15 kvuli velikost kursoru
+	this.mouseX = x+this.transl+15; //15 kvuli velikost kursoru
 	this.mouseY = y+15;
 };
+
 Game.prototype.mouseDown = function(e){
 	e.preventDefault();
 	if(e.which == 1){//left down

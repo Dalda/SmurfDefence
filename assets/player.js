@@ -15,7 +15,7 @@ function Player(x, y){      /* x, y = souradnice v cele game (0 - treba 2000) */
 
 	this.collTolerance = 10; //collision tolerance, when the collision is detected in Game
 
-	this.shotPower = 3;
+	this.shotPower = 3;   //3   bacha at to neprolitava skrz krabice
 	this.shotAccuracy = 0.3;
 	this.health = 100;
 	this.speed = 2.4;

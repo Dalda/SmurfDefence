@@ -11,7 +11,10 @@ Loader.prototype.loadObjects = function(objects, gw, h){ /*gamewidth, heigth*/
 				new Box(750, 230, 70, 30),
 				new Box(870, 290, 50, 50),
 				new Box(1200, h-100, 50, 50),
-				new Box(1500, h-100, 50, 50));
+				new Box(1500, h-100, 50, 50),
+				new Box(1550, h-150, 50, 50),
+				new Box(1600, h-200, 50, 50),
+				new Box(1950, h-100, 50, 50));
 };
 
 function Background(gameWidth, height){
