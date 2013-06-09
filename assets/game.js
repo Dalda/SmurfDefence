@@ -12,11 +12,15 @@ function Game(){
 	this.bombActive = false; //only one bomb object at once
 	this.bombLock = false;
 
+	this.npcs = [];
+	this.waves = new Waves(this.npcs, this.gameWidth, this.height);
+
 	this.interval = false;
 	this.stopped = true;
 	this.loader = new Loader(this.gameWidth, this.height);
 	this.sound = new Sound();
-	this.player = new Player(this.width/2, this.height/2); /* zasazujeme ho do gamewidth(0-gameWidth) a gameheight */
+	this.player = new Player(300, this.height/2); /* zasazujeme ho do gamewidth(0-gameWidth) a gameheight */
+	this.gui = new GUI(this.width, this.height);
 
 	this.offset = false; //initialized in init()
 	this.down = {}; //both keys and mouse click
@@ -56,9 +60,16 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 
 Game.prototype.update = function(){
 	this.player.update(this.down["a"], this.down["d"], this.objects, this.gameWidth);
+	for(var i=0;i<this.npcs.length;i++){
+		this.npcs[i].update(true, false, this.objects, this.gameWidth);
+	}
 	this.updateShots();
 	this.updateBomb();
 	this.updateExplosions();
+	this.gui.update(this.mouseX-this.transl, this.mouseY, this.player.health, this.waves.waveNum);
+	if(this.down["leftdown"] && this.gui.elements["wavebutton"].hover){
+		this.waves.next();
+	}
 };
 
 Game.prototype.updateShots = function(){
@@ -121,10 +132,16 @@ Game.prototype.draw = function(){
 			this.bombActive.draw(this.ctx);
 		}
 		this.player.draw(this.ctx);
+		for(var i=0;i<this.npcs.length;i++){
+			this.npcs[i].draw(this.ctx);
+		}
 		for(var i=0;i<this.explosions.length;i++){
 			this.explosions[i].draw(this.ctx);
 		}
 	////////////////////////////////////////////
+	this.ctx.restore();
+	this.ctx.save();
+		this.gui.draw(this.ctx);
 	this.ctx.restore();
 };
 

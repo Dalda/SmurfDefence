@@ -8,7 +8,7 @@ function Throwing(x, y, size, speed){
 	this.vy = 0;
 }
 
-Throwing.prototype.init = function(nx, ny, facingR, accuracy){
+Throwing.prototype.init = function(nx, ny, facingR, accuracy){  //todo accuracy
 	var angle = 0;
 	if(facingR){ //kouka se doprava
 		if(nx < this.x+45){ //mys vlevo

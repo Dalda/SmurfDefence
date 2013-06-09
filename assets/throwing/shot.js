@@ -1,5 +1,5 @@
 function Shot(x, y, shotPow){
-	Throwing.call(this, x+20, y+30, 4, Math.random()*3+shotPow); //constructor
+	Throwing.call(this, x+20, y+30, 4, shotPow); //constructor
 
 	this.bounces = 3; //vydrzi 4 odrazu od zeme
 }
