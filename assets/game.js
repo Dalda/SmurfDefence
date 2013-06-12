@@ -115,7 +115,7 @@ Game.prototype.updateExplosions = function(){
 Game.prototype.draw = function(){
 	this.ctx.clearRect(0, 0, this.width, this.height);
 	this.ctx.save();
-	this.transl = this.player.x-this.width/2;
+	this.transl+= ((this.player.x-this.width/2)-this.transl)*0.08;         //x += (nova pozice - puvodni pozice) * koeficient
 	if(this.transl < 0) this.transl = 0;
 	else if(this.transl+this.width > this.gameWidth) this.transl = this.gameWidth-this.width;
 	///////////////////////////////////////////
