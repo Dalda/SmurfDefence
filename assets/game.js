@@ -15,6 +15,9 @@ function Game(){
 	this.npcs = [];
 	this.waves = new Waves(this.npcs, this.gameWidth, this.height);
 
+	this.towerHealth = 10000;
+	this.towerX = 200;
+
 	this.interval = false;
 	this.stopped = true;
 	this.loader = new Loader(this.gameWidth, this.height);
@@ -56,22 +59,45 @@ Game.prototype.run = function(_this){ //_this is actual game variable
 	//meanwhile processing player input
 	_this.update();
 	_this.draw();
+	if(_this.stopped){
+		_this.ctx.fillStyle = "blue";
+		_this.ctx.font = "bold 19px Arial";
+		_this.ctx.fillText("GAME OVER", 200, 200);
+	}
 };
 
 Game.prototype.update = function(){
-	this.player.update(this.down["a"], this.down["d"], this.objects, this.gameWidth);
+	this.checkGameOver();
+	this.player.update(this.down["a"], this.down["d"], this.objects, this.gameWidth, this.towerX);
 	for(var i=0;i<this.npcs.length;i++){
-		this.npcs[i].update(true, false, this.objects, this.gameWidth);
+		this.npcs[i].update(true, false, this.objects, this.gameWidth, this.towerX);
+		if(this.npcs[i].attackTower(this.towerX)){
+			this.towerHealth -= this.npcs[i].destroyPower;
+		}
 	}
+	this.updateObjects();
 	this.updateShots();
 	this.updateBomb();
 	this.updateExplosions();
-	this.gui.update(this.mouseX-this.transl, this.mouseY, this.player.health, this.waves.waveNum);
+	this.gui.update(this.mouseX-this.transl, this.mouseY, this.player.health, this.waves.waveNum, this.towerHealth);
 	if(this.down["leftdown"] && this.gui.elements["wavebutton"].hover){
 		this.waves.next();
 	}
 };
-
+Game.prototype.checkGameOver = function(){
+	if(this.towerHealth <= 0){
+		this.stopped = true;
+		window.clearInterval(this.interval);
+	}
+}
+Game.prototype.updateObjects = function(){
+	for(var i=0;i<this.objects.length;){
+		if(this.objects[i].dead()){
+			this.objects.splice(i, 1);
+		}
+		else i++;
+	}
+}
 Game.prototype.updateShots = function(){
 	if(!this.shootingLock && this.down["leftdown"]){
 		var shotNew = new Shot(this.player.x, this.player.y, this.player.shotPower);
@@ -89,6 +115,18 @@ Game.prototype.updateShots = function(){
 			this.shots.splice(i, 1);
 		}
 		else i++;
+	}
+	for(var j = 0; j< this.npcs.length;){
+		for(var i=0;i<this.shots.length;){
+			if(this.npcs[j].collideShot(this.shots[i], this.ctx)){
+				this.shots.splice(i, 1);
+			}
+			else i++;
+		}
+		if(this.npcs[j].dead()){
+			this.npcs.splice(j, 1);
+		}
+		else j++;
 	}
 };
 Game.prototype.updateBomb = function(){

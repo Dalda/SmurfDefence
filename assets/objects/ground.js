@@ -11,4 +11,5 @@ Ground.prototype.im.src = "assets/images/ground.png";
 Ground.prototype.draw = function(ctx){
 	ctx.drawImage(this.im, this.x, this.y, this.xSize, this.ySize);
 };
+Ground.prototype.dead = function(){return false;}
 

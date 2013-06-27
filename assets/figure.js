@@ -27,7 +27,7 @@ Figure.prototype.draw = function(ctx){
 		this.x-35*this.ratio, this.y-4*this.ratio, this.shiftS*this.ratio, this.shiftS*this.ratio); //-35 je jen zde, nikoli u kolizeChecků
 };
 
-Figure.prototype.update = function(left, right, objects, gW){
+Figure.prototype.update = function(left, right, objects, gW, tx){
 	if(this.jumping){
 		this.y -= this.jumpEnergy;
 		this.jumpEnergy -= this.gravity;
@@ -53,9 +53,7 @@ Figure.prototype.update = function(left, right, objects, gW){
 		this.x += this.speed;
 		this.updFrame(false, true);
 	}
-
-	var coll = this.collide(objects, gW);
-	if(this instanceof NPC && coll) this.beginJump();
+	var coll = this.collide(objects, gW, tx);
 };
 
 Figure.prototype.updFrame = function(left, right){
@@ -100,9 +98,10 @@ Figure.prototype.endJump = function(){
 
 
 /*vrati pozici kde bude na kolidujici objekt tesne nalepen */
-Figure.prototype.collide = function(objects, gW){   /* gameWidth, hracova x nesmi jit do zaporu */
-	if(this.x < 0){
-		this.x = 0;
+Figure.prototype.collide = function(objects, gW, tx){   /* gameWidth, hracova x nesmi jit do zaporu */
+	var destr = this instanceof NPC;
+	if(this.x < tx){
+		this.x = tx;
 		return true;
 	}
 	else if(this.x+this.xSize > gW){
@@ -116,6 +115,7 @@ Figure.prototype.collide = function(objects, gW){   /* gameWidth, hracova x nesm
 			if(oy-this.ySize < this.y && oy+oyS > this.y){ //y collision test
 				if(Math.abs((ox-this.xSize)-this.x) < this.collTolerance){
 					this.x = (ox-this.xSize); //collision -left side of the object
+					if(destr) objects[i].durability -= this.destroyPower;
 					return true;
 				}
 			}
@@ -124,6 +124,7 @@ Figure.prototype.collide = function(objects, gW){   /* gameWidth, hracova x nesm
 			if(oy-this.ySize < this.y && oy+oyS > this.y){ //y collision test
 				if(Math.abs((ox+oxS)-this.x) < this.collTolerance){
 					this.x= (ox+oxS); //collision -right side of the object
+					if(destr) objects[i].durability -= this.destroyPower;
 					return true;
 				}
 			}
@@ -135,6 +136,7 @@ Figure.prototype.collide = function(objects, gW){   /* gameWidth, hracova x nesm
 						this.endJump(); //player landed
 					}
 					this.y = (oy-this.ySize); //collision -top side of the object
+					if(destr) objects[i].durability -= this.destroyPower;
 					return true;
 				}
 			}
@@ -143,6 +145,7 @@ Figure.prototype.collide = function(objects, gW){   /* gameWidth, hracova x nesm
 			if(oy+oyS > this.y && oy+oyS < this.y+this.ySize){ //y collision test
 				if(Math.abs((oy+oyS)-this.y) < this.collTolerance){
 					this.y = (oy+oyS); //collision -bottom side of the object
+					if(destr) objects[i].durability -= this.destroyPower;
 					return true;
 				}
 			}
